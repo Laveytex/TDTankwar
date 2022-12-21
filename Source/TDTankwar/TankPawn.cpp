@@ -25,6 +25,9 @@ ATankPawn::ATankPawn()
 	Turret = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret"));
 	Turret->SetupAttachment(TankBody);
 
+	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
+	CannonSetupPoint->AttachToComponent(Turret, FAttachmentTransformRules::KeepRelativeTransform);
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(TankBody);
 	SpringArm->bInheritYaw = false;
@@ -42,7 +45,30 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
+
+	SetupCannon();
 	
+}
+
+void ATankPawn::SetupCannon()
+{
+	if(Cannon)
+	{
+		Cannon->Destroy();
+	}
+	FActorSpawnParameters params;
+	params.Instigator = this;
+	params.Owner = this;
+	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
+	Cannon->AttachToComponent(CannonSetupPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
+void ATankPawn::Fire()
+{
+	if(Cannon)
+	{
+		Cannon->Fire();
+	}
 }
 
 // Called every frame
@@ -66,7 +92,7 @@ void ATankPawn::Tick(float DeltaTime)
 	
 	if(TankController)
 	{
-		UE_LOG(TankLog, Warning, TEXT("Controller here!"));
+		//UE_LOG(TankLog, Warning, TEXT("Controller here!"));
 		FVector MousePos = TankController->GetMousePos();
 		FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),MousePos);
 		FRotator CurrRotation = Turret->GetComponentRotation();

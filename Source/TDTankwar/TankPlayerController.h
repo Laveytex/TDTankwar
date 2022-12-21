@@ -7,9 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h"
 
-/**
- * 
- */
+class ATankPawn;
+
 UCLASS()
 class TDTANKWAR_API ATankPlayerController : public APlayerController
 {
@@ -34,5 +33,7 @@ protected:
 
 	void MoveForward(float Value);
 	void RotateRight(float Value);
+
+	void Fire();
 	
 };
