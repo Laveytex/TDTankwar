@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameStructs.h"
+#include "Projectile.h"
 #include "GameFramework/Actor.h"
 #include "Cannon.generated.h"
 
@@ -27,18 +28,20 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
 	float FireRate=1;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
 	float FireRange = 1000;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FireParams")
 	ECannonType Type = ECannonType::FireProjectile;
 
 	FTimerHandle ReloadTimerHandle;
 
 	bool ReadyToFire = false;
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	TSubclassOf<AProjectile> ProjectileClass;
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
