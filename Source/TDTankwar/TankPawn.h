@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Cannon.h"
-#include "Components/ArrowComponent.h"
+#include "DamageTaker.h"
+#include "HealthComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "TankPawn.generated.h"
 
@@ -15,7 +17,7 @@ class ATankPlayerController;
 class ACannon;
 
 UCLASS()
-class TDTANKWAR_API ATankPawn : public APawn
+class TDTANKWAR_API ATankPawn : public APawn, public  IDamageTaker
 {
 	GENERATED_BODY()
 
@@ -55,12 +57,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret/Speed")
 	TSubclassOf<ACannon> CannonClass;
 
+
 	UPROPERTY()
 	ACannon*Cannon;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UHealthComponent* HealthComponent;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* HitCollider;
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	
+
+	UFUNCTION()
+	void Die();
+	UFUNCTION()
+	void DamageTaked(float DamageValue);
 	
 
 public:	
@@ -79,6 +94,9 @@ public:
 	void Fire();
 
 	void SetupCannon(TSubclassOf<ACannon> CannonClassGet);
+
+	UFUNCTION()
+	void TakeDamage(FDamageData DamageData);
 	
 
 };

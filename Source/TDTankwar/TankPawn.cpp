@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "TankPlayerController.h"
+#include "Components/ArrowComponent.h"
 
 
 DECLARE_LOG_CATEGORY_EXTERN(TankLog, All, All);
@@ -37,7 +38,13 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-	
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComponent->OnDie.AddUObject(this, &ATankPawn::Die);
+	HealthComponent->OnDamage.AddUObject(this, &ATankPawn::DamageTaked);
+
+	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+	HitCollider->SetupAttachment(TankBody);
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +55,22 @@ void ATankPawn::BeginPlay()
 
 	SetupCannon(CannonClass);
 	
+}
+
+void ATankPawn::Die()
+{
+	Destroy();
+}
+
+void ATankPawn::DamageTaked(float DamageValue)
+{
+	UE_LOG(TankLog, Warning,
+		TEXT("Tank %s taked damage: %f Health^ %f"), *GetName(), DamageValue, HealthComponent->GetHeath());
+}
+
+void ATankPawn::TakeDamage(FDamageData DamageData)
+{
+	HealthComponent->TakeDamage(DamageData);
 }
 
 void ATankPawn::SetupCannon(TSubclassOf<ACannon> CannonClassGet)

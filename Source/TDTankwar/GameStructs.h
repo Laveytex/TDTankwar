@@ -13,6 +13,19 @@ enum class ECannonType : uint8
 	FireTrace = 1 UMETA(DisplayName = "UseTracr")
 };
 
+USTRUCT()
+struct FDamageData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float DamageValue;
+	UPROPERTY()
+	AActor * Instigator;
+	UPROPERTY()
+	AActor * DamageMaker;
+
+};
 
 UCLASS()
 class TDTANKWAR_API UGameStructs : public UObject
