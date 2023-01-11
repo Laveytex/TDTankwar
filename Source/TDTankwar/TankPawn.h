@@ -22,13 +22,12 @@ class TDTANKWAR_API ATankPawn : public APawn, public  IDamageTaker
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ATankPawn();
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Component)
 	UStaticMeshComponent* TankBody;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Component)
-	UStaticMeshComponent* Turret;
+	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Component)
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Component)
@@ -65,6 +64,12 @@ public:
 	UHealthComponent* HealthComponent;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UBoxComponent* HitCollider;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "AI|Move Params|Patrol points",
+		Meta = (MakeEditWidget = true))
+	TArray<FVector> PatrollingPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Accuracy")
+	float MovementAccurency = 50;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -97,6 +102,17 @@ public:
 
 	UFUNCTION()
 	void TakeDamage(FDamageData DamageData);
-	
 
+	UFUNCTION()
+	TArray<FVector> GetPatrollingPoints() {return  PatrollingPoints;};
+	UFUNCTION()
+	float GetMovementAccurency() {return MovementAccurency; };
+
+	UFUNCTION()
+	FVector GetTurretForwardVector();
+	UFUNCTION()
+	void RotateTurretTo(FVector TargetPosition);
+
+	FVector GetEyesPosition();
+	
 };

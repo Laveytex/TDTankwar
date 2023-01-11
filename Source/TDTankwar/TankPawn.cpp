@@ -23,11 +23,11 @@ ATankPawn::ATankPawn()
 	TankBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank Body"));
 	RootComponent = TankBody;
 
-	Turret = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret"));
-	Turret->SetupAttachment(TankBody);
+	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret"));
+	TurretMesh->SetupAttachment(TankBody);
 
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon setup point"));
-	CannonSetupPoint->AttachToComponent(Turret, FAttachmentTransformRules::KeepRelativeTransform);
+	CannonSetupPoint->AttachToComponent(TurretMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(TankBody);
@@ -73,6 +73,11 @@ void ATankPawn::TakeDamage(FDamageData DamageData)
 	HealthComponent->TakeDamage(DamageData);
 }
 
+FVector ATankPawn::GetTurretForwardVector()
+{
+	return TurretMesh->GetForwardVector();
+}
+
 void ATankPawn::SetupCannon(TSubclassOf<ACannon> CannonClassGet)
 {
 	if(Cannon)
@@ -100,31 +105,43 @@ void ATankPawn::Fire()
 void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	FVector CurrentLocation = GetActorLocation();
+
+	// Tank Movement
+	FVector currentLocation = GetActorLocation();
 	FVector ForwardVector = GetActorForwardVector();
-	FVector NewPosition = CurrentLocation + ForwardVector*MovementSpeed*TargetForwardAxisValue*DeltaTime;
+	FVector NewPosition = currentLocation + ForwardVector*MovementSpeed*TargetForwardAxisValue*DeltaTime;
 	SetActorLocation(NewPosition, true);
 
+	// Tank Rotation
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, InterpolationKey);
 	//UE_LOG(TankLog, Warning, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue = %f"), CurrentRightAxisValue, TargetRightAxisValue);
-
 	float YawRotation = RotationSpeed*DeltaTime*CurrentRightAxisValue;
-	FRotator CurrentRotation = GetActorRotation();
-	YawRotation = CurrentRotation.Yaw + YawRotation;
-	FRotator NewRotate = FRotator( 0, YawRotation, 0);
-	SetActorRotation(NewRotate);
-	
+	FRotator currentRotation = GetActorRotation();
+	YawRotation = currentRotation.Yaw + YawRotation;
+	FRotator newRotate = FRotator( 0, YawRotation, 0);
+	SetActorRotation(newRotate);
+
+	// TurrenRotation
 	if(TankController)
 	{
-		//UE_LOG(TankLog, Warning, TEXT("Controller here!"));
 		FVector MousePos = TankController->GetMousePos();
-		FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),MousePos);
-		FRotator CurrRotation = Turret->GetComponentRotation();
-		TargetRotation.Pitch = CurrRotation.Pitch;
-		TargetRotation.Roll = CurrRotation.Roll;
-		Turret->SetWorldRotation(FMath::Lerp(CurrRotation,TargetRotation,TurretRotationInterpolationKey));
+		RotateTurretTo(MousePos);
+		
 	}
+}
+
+void ATankPawn::RotateTurretTo(FVector TargetPosition)
+{
+	FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(),TargetPosition);
+	FRotator currRotation = TurretMesh->GetComponentRotation();
+	targetRotation.Pitch = currRotation.Pitch;
+	targetRotation.Roll = currRotation.Roll;
+	TurretMesh->SetWorldRotation(FMath::Lerp(currRotation,targetRotation,TurretRotationInterpolationKey));
+}
+
+FVector ATankPawn::GetEyesPosition()
+{
+	return CannonSetupPoint->GetComponentLocation();
 }
 
 // Called to bind functionality to input
