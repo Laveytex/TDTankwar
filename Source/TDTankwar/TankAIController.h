@@ -35,7 +35,8 @@ protected:
 	float TargetingSpeed = 0.1f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float Accurency = 10;
-	bool IsPlayerSeen();
+	
+	
 	
 protected:
 
@@ -46,6 +47,10 @@ protected:
 	void Targeting();
 	void RotateToPlayer();
 	bool IsPlayerInRange();
+	bool IsPlayerSeen();
 	bool CanFire();
-	void Fire();	
+	void Fire();
+
+	void Initialize();
+	
 };

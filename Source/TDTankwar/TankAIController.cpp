@@ -10,55 +10,26 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 
-bool ATankAIController::IsPlayerSeen()
-{
-	FVector playerPos = PlayerPawn->GetActorLocation();
-	FVector eyesPos = TankPawn->GetEyesPosition();
 
-	FHitResult hitResult;
-	FCollisionQueryParams traceParams =
-		FCollisionQueryParams(FName(TEXT("FireTrace")),true,this);
-	traceParams.bTraceComplex = true;
-	traceParams.AddIgnoredActor(TankPawn);
-	traceParams.bReturnPhysicalMaterial = false;
-	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos,
-		playerPos, ECollisionChannel::ECC_Visibility, traceParams))
-	{
-		if(hitResult.Actor.Get())
-		{
-			/*DrawDebugLine(GetWorld(), eyesPos, hitResult.Location,
-				FColor::Cyan, false, 0.5f,0, 10);*/
-			return hitResult.Actor.Get() == PlayerPawn;
-		}
-	}
-	/*DrawDebugLine(GetWorld(), eyesPos, playerPos,
-		FColor::Cyan, false, 0.5f, 0, 10);*/
-	return false;
-}
 
 void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	TankPawn = Cast<ATankPawn>(GetPawn());
-	
-	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	FVector pawnLocation = TankPawn->GetActorLocation();
-	MovementAccurency = TankPawn->GetMovementAccurency();
-	TArray<FVector> points = TankPawn->GetPatrollingPoints();
-	for (FVector point : points)
-	{
-		PatrollingPoints.Add(point + pawnLocation);
-	}
-	CurrentPatrolPointIndex = 0;
 
-	UE_LOG(LogActor, Warning, TEXT("AI COntroller Check"));
+	Initialize();
 }
 
 void ATankAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	TankPawn->MoveForward(1);
 
+	if(!TankPawn)
+		Initialize();
+	
+	if(!TankPawn)
+		return;
+	
+	TankPawn->MoveForward(1);
 	float rotationValue = GetRotationValue();
 	TankPawn->RotateRight(rotationValue);
 	UE_LOG(LogTemp, Warning, TEXT("AI Controller check"));
@@ -97,6 +68,35 @@ float ATankAIController::GetRotationValue()
 	return  rotationValue;
 }
 
+bool ATankAIController::IsPlayerSeen()
+{
+	if(!PlayerPawn)
+		Initialize();
+	
+	FVector playerPos = PlayerPawn->GetActorLocation();
+	FVector eyesPos = TankPawn->GetEyesPosition();
+
+	FHitResult hitResult;
+	FCollisionQueryParams traceParams =
+		FCollisionQueryParams(FName(TEXT("FireTrace")),true,this);
+	traceParams.bTraceComplex = true;
+	traceParams.AddIgnoredActor(TankPawn);
+	traceParams.bReturnPhysicalMaterial = false;
+	if(GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos,
+		playerPos, ECollisionChannel::ECC_Visibility, traceParams))
+	{
+		if(hitResult.Actor.Get())
+		{
+			/*DrawDebugLine(GetWorld(), eyesPos, hitResult.Location,
+				FColor::Cyan, false, 0.5f,0, 10);*/
+			return hitResult.Actor.Get() == PlayerPawn;
+		}
+	}
+	/*DrawDebugLine(GetWorld(), eyesPos, playerPos,
+		FColor::Cyan, false, 0.5f, 0, 10);*/
+	return false;
+}
+
 void ATankAIController::Targeting()
 {
 	if(CanFire())
@@ -131,4 +131,23 @@ bool ATankAIController::CanFire()
 void ATankAIController::Fire()
 {
 	TankPawn->Fire();
+}
+
+void ATankAIController::Initialize()
+{
+	TankPawn = Cast<ATankPawn>(GetPawn());
+	if(TankPawn)
+	{
+		PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+		FVector pawnLocation = TankPawn->GetActorLocation();
+		MovementAccurency = TankPawn->GetMovementAccurency();
+		TArray<FVector> points = TankPawn->GetPatrollingPoints();
+		for (FVector point : points)
+		{
+			PatrollingPoints.Add(point);
+		}
+		CurrentPatrolPointIndex = 0;
+
+		UE_LOG(LogActor, Warning, TEXT("AI COntroller Check"));
+	}
 }
