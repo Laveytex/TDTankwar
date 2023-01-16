@@ -7,7 +7,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "TankPlayerController.h"
-#include "../../../../Ue_Engine/UE_4.27/Engine/Plugins/Compositing/OpenCVLensDistortion/Source/ThirdParty/OpenCV/include/opencv2/core/types.hpp"
 #include "Components/ArrowComponent.h"
 
 
@@ -53,7 +52,8 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
-
+	
+	
 	SetupCannon(CannonClass);
 	
 }

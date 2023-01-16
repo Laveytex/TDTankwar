@@ -16,7 +16,6 @@ ATankFactory::ATankFactory()
 	
 	BuildingMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BuildingMesh"));
 	BuildingMeshComponent->SetupAttachment(sceneComponent);
-	BuildingMeshComponent->SetSkeletalMesh(BuildingMesh);
 
 	TankSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Cannon spawn point"));
 	TankSpawnPoint->AttachToComponent(sceneComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -27,12 +26,17 @@ ATankFactory::ATankFactory()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 	HealthComponent->OnDie.AddUObject(this, &ATankFactory::Die);
 	HealthComponent->OnDamage.AddUObject(this, &ATankFactory::DamageTaked);
+
+	GateAnimOpen = CreateDefaultSubobject<UAnimationAsset>(TEXT("GateAnim"));
 }
 
 // Called when the game starts or when spawned
 void ATankFactory::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(LikedMapLoader)
+		LikedMapLoader->SetIsActivated(false);
 
 	FTimerHandle _targetingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this,
@@ -53,16 +57,21 @@ void ATankFactory::TakeDamage(FDamageData DamageData)
 
 void ATankFactory::SpawnNewTank()
 {
+	UE_LOG(LogTemp, Warning, TEXT("TankSpawn"));
+	
 	FTransform spawnTransform(TankSpawnPoint->GetComponentRotation(),
 		TankSpawnPoint->GetComponentLocation(), FVector(1));
 	ATankPawn* newTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, spawnTransform,
 		this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	newTank->SetPatrollingPoints(TankWayPoint);
 	UGameplayStatics::FinishSpawningActor(newTank, spawnTransform);
+	BuildingMeshComponent->PlayAnimation(GateAnimOpen, false);
 }
 
 void ATankFactory::Die()
 {
+	if(LikedMapLoader)
+		LikedMapLoader->SetIsActivated(true);
 	Destroy();
 }
 
