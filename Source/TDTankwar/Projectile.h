@@ -15,7 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
-	void Start();
+	virtual void Start();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,14 +28,18 @@ protected:
 	float MoveSpeed = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement/Speed")
 	float MoveRate = 0.005f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
+	float PushForce = 1000;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
 	float Damage = 1;
+	
 
 	FTimerHandle MovementTimerHandle;
 		
 	
 	UFUNCTION()
-	void Move();
+	virtual void Move();
 	
 public:
 	// Called every frame

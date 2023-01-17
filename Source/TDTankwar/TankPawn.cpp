@@ -66,7 +66,7 @@ void ATankPawn::Die()
 void ATankPawn::DamageTaked(float DamageValue)
 {
 	UE_LOG(TankLog, Warning,
-		TEXT("Tank %s taked damage: %f Health^ %f"), *GetName(), DamageValue, HealthComponent->GetHeath());
+		TEXT("Tank %s taked damage: %f Health: %f"), *GetName(), DamageValue, HealthComponent->GetHeath());
 }
 
 void ATankPawn::TakeDamage(FDamageData DamageData)

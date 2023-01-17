@@ -32,7 +32,6 @@ void ATankAIController::Tick(float DeltaSeconds)
 	TankPawn->MoveForward(1);
 	float rotationValue = GetRotationValue();
 	TankPawn->RotateRight(rotationValue);
-	UE_LOG(LogTemp, Warning, TEXT("AI Controller check"));
 	Targeting();
 }
 
@@ -147,7 +146,5 @@ void ATankAIController::Initialize()
 			PatrollingPoints.Add(point);
 		}
 		CurrentPatrolPointIndex = 0;
-
-		UE_LOG(LogActor, Warning, TEXT("AI COntroller Check"));
 	}
 }
