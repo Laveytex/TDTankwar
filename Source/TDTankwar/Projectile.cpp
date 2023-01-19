@@ -5,6 +5,8 @@
 #include "DamageTaker.h"
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -43,8 +45,10 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 			damageData.DamageValue = Damage;
 			damageData.Instigator = owner;
 			damageData.DamageMaker = this;
-
 			damageTakerActor->TakeDamage(damageData);
+
+			UNiagaraComponent* Spawn = UNiagaraFunctionLibrary::SpawnSystemAtLocation
+			(GetWorld(), ExplosionEffects, GetActorLocation(),GetActorRotation());
 		}
 		else
 		{
@@ -56,9 +60,11 @@ void AProjectile::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 					FVector forceVector = OtherActor->GetActorLocation()-GetActorLocation();
 					forceVector.Normalize();
 					mesh->AddImpulse(forceVector*PushForce, NAME_None, true);
+					
+					UNiagaraComponent* Spawn = UNiagaraFunctionLibrary::SpawnSystemAtLocation
+					(GetWorld(), ExplosionEffects, GetActorLocation(),GetActorRotation());
 				}
 			}
-			//OtherActor->Destroy();
 		}
 		Destroy();
 	}

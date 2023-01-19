@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
@@ -23,6 +25,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* Mesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UNiagaraSystem* ExplosionEffects;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement/Speed")
 	float MoveSpeed = 100;
@@ -33,6 +37,7 @@ protected:
 	float PushForce = 1000;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
 	float Damage = 1;
+
 	
 
 	FTimerHandle MovementTimerHandle;

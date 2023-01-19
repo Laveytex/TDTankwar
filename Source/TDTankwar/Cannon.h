@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameStructs.h"
+#include "NiagaraComponent.h"
 #include "Projectile.h"
 #include "GameFramework/Actor.h"
 #include "Cannon.generated.h"
@@ -44,6 +45,8 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UParticleSystemComponent* ShootEffect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UNiagaraSystem* ShootEffect_2;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UAudioComponent* AudioEffect;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")

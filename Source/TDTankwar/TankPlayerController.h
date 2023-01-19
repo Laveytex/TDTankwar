@@ -24,14 +24,12 @@ public:
 	ATankPlayerController();
 	virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
-
 	FVector GetMousePos(){return  MousePos;}
 
 
 	
 protected:
 	virtual void BeginPlay() override;
-
 	void MoveForward(float Value);
 	void RotateRight(float Value);
 	void RotateTurretRight(float AxisValue);

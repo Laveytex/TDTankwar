@@ -21,7 +21,6 @@ void ATankPlayerController::SetupInputComponent()
 
 void ATankPlayerController::Tick(float DeltaSeconds)
 {
-	//Super::Tick(DeltaSeconds);
 	FVector MouseDirection;
 	DeprojectMousePositionToWorld(MousePos, MouseDirection);
 	FVector PawnPos = TankPawn->GetActorLocation();
@@ -36,6 +35,7 @@ void ATankPlayerController::Tick(float DeltaSeconds)
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	TankPawn = Cast<ATankPawn>(GetPawn());
 }
 

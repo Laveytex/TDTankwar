@@ -6,6 +6,8 @@
 #include "DrawDebugHelpers.h"
 #include "Components/ArrowComponent.h"
 #include "Components/AudioComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 
 
@@ -28,7 +30,6 @@ ACannon::ACannon()
 	ShootEffect->SetupAttachment(ProjectileSpawnPont);
 
 	AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioEffect"));
-
 	
 }
 
@@ -53,7 +54,9 @@ void ACannon::Fire()
 	}
 	ReadyToFire = false;
 
-	ShootEffect->ActivateSystem();
+	UNiagaraComponent* Spawn = UNiagaraFunctionLibrary::SpawnSystemAttached (ShootEffect_2, ProjectileSpawnPont,NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
+	
+	//ShootEffect->ActivateSystem();
 	AudioEffect->Play();
 
 	if(GetOwner() && GetOwner()==GetWorld()->GetFirstPlayerController()->GetPawn())

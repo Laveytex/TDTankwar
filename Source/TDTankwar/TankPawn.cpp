@@ -21,6 +21,7 @@ ATankPawn::ATankPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TankBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tank Body"));
+	//TankBody->SetMaterial(0, TankMaterial);
 	RootComponent = TankBody;
 
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret"));
@@ -45,6 +46,8 @@ ATankPawn::ATankPawn()
 
 	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
 	HitCollider->SetupAttachment(TankBody);
+
+	//TankMaterial->SetVectorParameterValueEditorOnly(FName ("Color"), FVector(1,0.43,0));
 }
 
 // Called when the game starts or when spawned
@@ -53,8 +56,8 @@ void ATankPawn::BeginPlay()
 	Super::BeginPlay();
 	TankController = Cast<ATankPlayerController>(GetController());
 	
-	
 	SetupCannon(CannonClass);
+	CreateDynamicMaterial();
 	
 }
 
@@ -113,10 +116,9 @@ void ATankPawn::Fire()
 	if(Cannon)
 	{
 		Cannon->Fire();
+		
 	}
 }
-
-
 
 // Called every frame
 void ATankPawn::Tick(float DeltaTime)
@@ -160,16 +162,50 @@ FVector ATankPawn::GetEyesPosition()
 	return CannonSetupPoint->GetComponentLocation();
 }
 
+void ATankPawn::CreateDynamicMaterial()
+{
+	//Tank Color
+	TankBobyMaterialInstance = TankBody->GetMaterial(0);
+	TankBobyDynamicMaterials = UMaterialInstanceDynamic::Create(TankBobyMaterialInstance, this);
+	TankBody->SetMaterial(0,TankBobyDynamicMaterials);
+	TurretMesh->SetMaterial(0,TankBobyDynamicMaterials);
+	if(TankController)
+	{
+		TankBobyDynamicMaterials->SetVectorParameterValue(FName ("Color"), FVector(0.1,0.1,0.1));
+	}
+	else
+	{
+		TankBobyDynamicMaterials->SetVectorParameterValue(FName ("Color"), FVector(1,0.44,0));
+	}
+	
+	//Wheel Color
+	TankWheelMaterialInstance = TankBody->GetMaterial(1);
+	TankwheelDynamicMaterials = UMaterialInstanceDynamic::Create(TankWheelMaterialInstance, this);
+	TankBody->SetMaterial(1,TankwheelDynamicMaterials);
+	TankwheelDynamicMaterials->SetScalarParameterValue(FName ("TextureOffset"), TextureOffset);
+	
+}
+
+void ATankPawn::WheelTextureOffset()
+{
+	TextureOffset = TextureOffset - 0.01;
+	UE_LOG(TankLog, Warning, TEXT("textureOffset %f"), TextureOffset);
+	TankwheelDynamicMaterials->SetScalarParameterValue(FName ("TextureOffset"), TextureOffset);
+
+}
+
 // Called to bind functionality to input
 void ATankPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ATankPawn::MoveForward(float Value)
 {
 	TargetForwardAxisValue = Value;
+	if(Value>0)
+	WheelTextureOffset();
+	
 }
 
 void ATankPawn::RotateRight(float Value)

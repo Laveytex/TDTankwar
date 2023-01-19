@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/TargetPoint.h"
 #include "GameFramework/Pawn.h"
+#include "Materials/MaterialInstanceActor.h"
 #include "TankPawn.generated.h"
 
 class UStaticMeshComponent;
@@ -33,7 +34,18 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Component)
 	UCameraComponent* Camera;
-
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Component)
+	UMaterial* TankMaterial;
+	UPROPERTY()
+	UMaterialInterface* TankBobyMaterialInstance;
+	UPROPERTY()
+	UMaterialInterface* TankWheelMaterialInstance;
+	UPROPERTY()
+	UMaterialInstanceDynamic* TankBobyDynamicMaterials;
+	UPROPERTY()
+	UMaterialInstanceDynamic* TankwheelDynamicMaterials;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
 	float MovementSpeed = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
@@ -72,6 +84,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Accuracy")
 	float MovementAccurency = 50;
+
+	float TextureOffset = 0;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -119,5 +133,8 @@ public:
 	void RotateTurretTo(FVector TargetPosition);
 
 	FVector GetEyesPosition();
-	
+
+	void CreateDynamicMaterial();
+
+	void WheelTextureOffset();
 };
