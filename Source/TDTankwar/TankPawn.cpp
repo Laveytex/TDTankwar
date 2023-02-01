@@ -116,7 +116,6 @@ void ATankPawn::Fire()
 	if(Cannon)
 	{
 		Cannon->Fire();
-		
 	}
 }
 
@@ -189,9 +188,7 @@ void ATankPawn::CreateDynamicMaterial()
 void ATankPawn::WheelTextureOffset()
 {
 	TextureOffset = TextureOffset - 0.01;
-	UE_LOG(TankLog, Warning, TEXT("textureOffset %f"), TextureOffset);
 	TankwheelDynamicMaterials->SetScalarParameterValue(FName ("TextureOffset"), TextureOffset);
-
 }
 
 // Called to bind functionality to input
@@ -205,7 +202,6 @@ void ATankPawn::MoveForward(float Value)
 	TargetForwardAxisValue = Value;
 	if(Value>0)
 	WheelTextureOffset();
-	
 }
 
 void ATankPawn::RotateRight(float Value)

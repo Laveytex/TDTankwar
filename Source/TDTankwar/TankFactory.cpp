@@ -35,9 +35,10 @@ void ATankFactory::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(LikedMapLoader)
-		LikedMapLoader->SetIsActivated(false);
+	/*if(LikedMapLoader)
+		LikedMapLoader->SetIsActivated(false);*/
 
+	//Spawn tank timer
 	FTimerHandle _targetingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(_targetingTimerHandle, this,
 		&ATankFactory::SpawnNewTank, SpawnTankRate, true, SpawnTankRate);
@@ -63,16 +64,19 @@ void ATankFactory::SpawnNewTank()
 		TankSpawnPoint->GetComponentLocation(), FVector(1));
 	ATankPawn* newTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, spawnTransform,
 		this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+	//Set point to move new tank
 	newTank->SetPatrollingPoints(TankWayPoint);
 	UGameplayStatics::FinishSpawningActor(newTank, spawnTransform);
+	
 	BuildingMeshComponent->PlayAnimation(GateAnimOpen, false);
 }
 
 void ATankFactory::Die()
 {
-	if(LikedMapLoader)
+	/*if(LikedMapLoader)
 		LikedMapLoader->SetIsActivated(true);
-	Destroy();
+	Destroy();*/
 }
 
 void ATankFactory::DamageTaked(float DamageValue)

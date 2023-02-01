@@ -2,31 +2,38 @@
 
 
 #include "MapLoader.h"
-
-#include <solver/PxSolverDefs.h>
-
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/Polys.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
+// Sets default valuesв
 AMapLoader::AMapLoader()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-	USceneComponent* scenComp = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = scenComp;
+	USceneComponent* sceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = sceneComponent;
 
-	GateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GateMesh"));
-	GateMesh->SetupAttachment(scenComp);
+	GateMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GateMesh"));
+	GateMesh->SetupAttachment(sceneComponent);
+
+	GateBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GateBodyMesh"));
+	GateBody->SetupAttachment(sceneComponent);
+
+	TrafficLight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrafficLightMesh"));
+	TrafficLight->SetupAttachment(sceneComponent);
+
+	GateAnimOpen = CreateDefaultSubobject<UAnimationAsset>(TEXT("GateAnim"));
+	GateAnimClose = CreateDefaultSubobject<UAnimationAsset>(TEXT("GateAnim"));
 
 	ActivateLight=CreateDefaultSubobject<UPointLightComponent>(TEXT("Activated light"));
-	ActivateLight->SetupAttachment(scenComp);
+	ActivateLight->SetupAttachment(sceneComponent);
 
 	DeadctivateLight=CreateDefaultSubobject<UPointLightComponent>(TEXT("Deactivate light"));
-	DeadctivateLight->SetupAttachment(scenComp);
+	DeadctivateLight->SetupAttachment(sceneComponent);
 
 	TriggerCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigget collider"));
-	TriggerCollider->SetupAttachment(scenComp);
+	TriggerCollider->SetupAttachment(sceneComponent);
 	TriggerCollider->OnComponentBeginOverlap.AddDynamic(this, &AMapLoader::OnTriggetOverlapBegin);
 
 	SetActivateLight();
@@ -38,12 +45,23 @@ void AMapLoader::SetIsActivated(bool NewIsActivated)
 	IsActivate = NewIsActivated;
 
 	SetActivateLight();
+	
 }
 
 void AMapLoader::SetActivateLight()
 {
 	ActivateLight->SetHiddenInGame(!IsActivate);
 	DeadctivateLight->SetHiddenInGame(IsActivate);
+	if (IsActivate)
+	{
+		GateMesh->PlayAnimation(GateAnimOpen, false);
+	}
+	else
+	{
+		GateMesh->PlayAnimation(GateAnimClose, false);
+	}
+	
+	
 }
 
 void AMapLoader::OnTriggetOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* otherActor,

@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/PointLightComponent.h"
 #include "GameFramework/Actor.h"
+
 #include "MapLoader.generated.h"
+
 
 UCLASS()
 class TDTANKWAR_API AMapLoader : public AActor
@@ -15,13 +18,23 @@ class TDTANKWAR_API AMapLoader : public AActor
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	UStaticMeshComponent* GateMesh;
+	USkeletalMeshComponent* GateMesh;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* GateBody;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UStaticMeshComponent* TrafficLight;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UBoxComponent* TriggerCollider;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UPointLightComponent* ActivateLight;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UPointLightComponent* DeadctivateLight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UAnimationAsset* GateAnimOpen;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UAnimationAsset* GateAnimClose;
+	
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level loading params");
 	FName LoadLevelName;
